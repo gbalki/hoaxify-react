@@ -85,7 +85,7 @@ class UserSignupPage extends React.Component {
 
                     <h1 className="text-center">{t('Sign Up')}</h1>
                     <Input name="username" label={t("User Name")} error={username} onChange={this.onChange}></Input>
-                    <Input name="displayName" label={t("Display Name")} error={displayName} onChange={this.ononChange}></Input>
+                    <Input name="displayName" label={t("Display Name")} error={displayName} onChange={this.onChange}></Input>
                     <Input name="password" label={t("Password")} error={password} onChange={this.onChange} type="password"></Input>
                     <Input name="passwordRepeat" label={t("Password Repeat")} error={passwordRepeat} onChange={this.onChange} type="password"></Input>
                     
