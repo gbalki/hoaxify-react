@@ -1,8 +1,9 @@
 import React from "react";
-import { signup , changeLanguage } from '../api/apiCalls';
+import { signup } from '../api/apiCalls';
 import Input from '../companents/Input';
 import { withTranslation } from 'react-i18next';
 import "/node_modules/flag-icons/css/flag-icons.min.css";
+import ButtonWithProgress from "../companents/ButtonWithProgress";
 
 
 class UserSignupPage extends React.Component {
@@ -67,11 +68,7 @@ class UserSignupPage extends React.Component {
         //     });
     };
 
-    onChangeLanguage = language => {
-        const { i18n } = this.props;
-        i18n.changeLanguage(language);
-        changeLanguage(language);
-    }
+   
 
 
     render() {
@@ -92,14 +89,13 @@ class UserSignupPage extends React.Component {
                    
                     <div className="text-center">
                         <br></br>
-                        <button className="btn btn-primary" onClick={this.onClickSignup} disabled={pandingApiCall || passwordRepeat !== undefined}>
-                            {pandingApiCall && <span className="spinner-border spinner-border-sm"></span>}
-                            {t('Sign Up')}</button>
+                        <ButtonWithProgress  onClick={this.onClickSignup}
+                         disabled={pandingApiCall || passwordRepeat !== undefined}
+                         pandingApiCall = {pandingApiCall}
+                         text = {t('Sign Up')}
+                         ></ButtonWithProgress>
                     </div>
-                    <div >
-                    <span className="fi fi-tr fs-3" onClick={() => this.onChangeLanguage('tr')} style={{cursor: 'pointer'}}></span>
-                    <span className="fi fi-us fs-3 mx-3" onClick={() => this.onChangeLanguage('en')} style={{cursor: 'pointer'}}></span>
-                    </div>
+                    
                 </form>
             </div>
 
