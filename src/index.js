@@ -1,23 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
 import './bootstrap-override.scss';
-import UserSignupPage from './pages/UserSignupPage';
-import LoginPage from './pages/LoginPage';
 import reportWebVitals from './reportWebVitals';
 import './i18n';
-import LanguageSelector from './companents/LanguageSelector';
+import App from './container/App';
+import { Provider } from 'react-redux';
+import configureStore from './redux/configureStore';
 
+const store = configureStore();
+ 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <div>
-  <React.StrictMode>
-    <LoginPage />
-    <LanguageSelector />
-  </React.StrictMode>
-
-  </div>
+    <Provider store={store}>
+        <App />
+    </Provider>
 );
 
 // If you want to start measuring performance in your app, pass a function

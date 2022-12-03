@@ -1,91 +1,65 @@
-import React, { Component } from 'react';
-import Input from '../companents/Input';
-import { withTranslation } from 'react-i18next';
-import { login } from '../api/apiCalls';
-import axios from 'axios';
-import ButtonWithProgress from '../companents/ButtonWithProgress';
+import React, { useState, useEffect } from 'react';
+import Input from '../components/Input';
+import { useTranslation } from 'react-i18next';
+import ButtonWithProgress from '../components/ButtonWithProgress';
+import { useApiProgress } from '../shared/ApiProgress';
+import { useDispatch } from 'react-redux';
+import { loginHandler } from '../redux/authActions';
 
-class LoginPage extends Component {
+const LoginPage = props => {
+    const [username, setUsername] = useState();
+    const [password, setPassword] = useState();
+    const [error, setError] = useState();
+    const dispatch = useDispatch();
 
-    state = {
+    useEffect(() => {
+        setError(undefined);
+    }, [username, password]);
 
-        username: null,
-        password: null,
-        error: null,
-        pandingApiCall: false
-    };
-
-    componentDidMount(){
-        axios.interceptors.request.use((request)=>{
-            this.setState({pandingApiCall: true});
-            return request;
-        }); 
-        axios.interceptors.response.use((response)=>{
-
-        },(error)=>{
-            this.setState({pandingApiCall: false});
-            throw error;
-        });
-        
-    }
-
-    onChange = event => {
-        const { name, value } = event.target;
-        this.setState({
-            [name]: value,
-            error : null
-        });
-    };
-
-    onClickLogin = async event => {
+    const onClickLogin = async event => {
         event.preventDefault();
-        const { username, password } = this.state;
         const creds = {
             username,
             password
         };
-        this.setState({
-            error : null
-        });
-        try {
 
-            await login(creds);
+        const { history } = props;
+        const { push } = history;
+        setError(undefined);
+        try {
+            await dispatch(loginHandler(creds));
+            push('/');
         } catch (apierror) {
-            this.setState({
-                error: apierror.response.data.message
-            });
+            setError(apierror.response.data.message);
         }
     };
+    const { t } = useTranslation();
+    const pendingApiCall = useApiProgress('post','/api/1.0/auth');
 
-    render() {
-        const { t } = this.props;
-        const { username, password, error, pandingApiCall} = this.state;
-
-        const buttonEnabled =username && password ;
-        return (
-            <div className="container">
-                <form>
-                    <h1 className='text-center'>{t('Login')}</h1>
-                    <Input label={t("User Name")} name="username" onChange={this.onChange} />
+    const buttonEnabled = username && password;
+    return (
+        <div className="container">
+            <form>
+                <br></br>
+                <h1 className='text-center'>{t('Login')}</h1>
+                <Input label={t("User Name")} onChange={event => setUsername(event.target.value)} />
+                <br></br>
+                <Input label={t("Password")} type="password" onChange={event => setPassword(event.target.value)} />
+                {error && <div className="alert alert-danger" role="alert">
+                    {error}
+                </div>}
+                <div className='text-center'>
                     <br></br>
-                    <Input label={t("Password")} name="password" type="password" onChange={this.onChange} />
-                   {error && <div className="alert alert-danger" role="alert">
-                       {error}
-                    </div>}
-                    <div className='text-center'>
-                        <br></br>
-                        <ButtonWithProgress
-                        onClick={this.onClickLogin} 
-                        disabled={!buttonEnabled || pandingApiCall} 
-                        pandingApiCall={pandingApiCall}
+                    <ButtonWithProgress
+                        onClick={onClickLogin}
+                        disabled={!buttonEnabled || pendingApiCall}
+                        pendingApiCall={pendingApiCall}
                         text={t('Login')}
-                        ></ButtonWithProgress>
-                    </div>
+                    ></ButtonWithProgress>
+                </div>
 
-                </form>
-            </div>
-        );
-    }
-}
-
-export default withTranslation()(LoginPage);
+            </form>
+        </div>
+    );
+};
+export default LoginPage;
